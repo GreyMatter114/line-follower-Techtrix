@@ -98,16 +98,17 @@ def solve_maze(start, finish, surface):
             continue
         visited.add(current)
         x, y = current
-        neighbors = compute(x, y, maze_path)  # Adjust based on grid size
-        for neighbor in neighbors:
-            print(neighbor)
-            nx, ny = neighbor
-            if (
-                0 <= nx < WIN_WIDTH
-                and 0 <= ny < WIN_HEIGHT
-                and surface.get_at((nx, ny)) != (255, 255, 255)
-            ):  # Check if the neighbor is within bounds and not a white wall
-                stack.append(neighbor)
+        neighbored = compute(x, y)  # Adjust based on grid size
+        for neighbors in neighbored:
+            for neighbor in neighbors:
+                print(neighbor)
+                nx, ny = neighbor
+                if (
+                    0 <= nx < WIN_WIDTH
+                    and 0 <= ny < WIN_HEIGHT
+                    and surface.get_at((nx, ny)) != (255, 255, 255)
+                ):  # Check if the neighbor is within bounds and not a white wall
+                    stack.append(neighbor)
     return False
 
 
