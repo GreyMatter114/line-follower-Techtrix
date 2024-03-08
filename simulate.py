@@ -4,7 +4,7 @@ import pygame
 import math
 
 # import pickle
-from utility.vision import compute
+import vision
 
 start = (0, 10)
 finish = (600, 590)
@@ -19,13 +19,11 @@ STAT_FONT = pygame.font.SysFont("comicsans", 50)
 # Pygame window
 WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 pygame.display.set_caption("Maze Solver")
-maze_path = "./utility/assets/maze.png"
+maze_path = "maze.png"
 # Load images
 bg_img = pygame.transform.scale(
     pygame.image.load(maze_path).convert_alpha(), (600, 600)
 )
-
-image = pygame.transform.scale(pygame.image.load("./utility/assets/car.png"), (20, 20))
 
 # Blit the image onto the main surface
 surface.blit(bg_img, (0, 0))
@@ -40,23 +38,10 @@ class RectObject:
         self.width = 10
         self.height = 10
         self.angle = 0
-        self.image = image
-        self.rect = self.image.get_rect()
-        self.center = self.rect.center
         self.x = x
         self.y = y
-        self.rect_center = (x, y)
-        self.image = pygame.transform.rotate(self.image, 90)
-        self.rect = self.image.get_rect(center=self.rect.center)
 
-    def rotate(self, angle):
-        self.angle += angle
-        self.image = pygame.transform.rotate(self.image, angle)
-        self.rect = self.image.get_rect(center=self.rect.center)
-
-    def move(self, distance):
-        dx = distance * math.cos(math.radians(self.angle))
-        dy = distance * math.sin(math.radians(self.angle))
+    def move(self, dx, dy):
         self.x += dx
         self.y += dy
 
@@ -64,7 +49,7 @@ class RectObject:
         """
         Draw the rectangular object on the window
         """
-        win.blit(self.image, self.rect_center)
+        pygame.draw.rect(surface, (255, 0, 0), (50, 20, 100, 60))
 
     def get_position(self):
         """
@@ -84,7 +69,7 @@ def draw_window(win, vehicle, score):
     pygame.display.update()
 
 
-def solve_maze(start, finish, surface):
+def solve_maze(start, finish, vehicle):
     """
     Solve the maze using a depth-first search algorithm
     """
@@ -98,17 +83,8 @@ def solve_maze(start, finish, surface):
             continue
         visited.add(current)
         x, y = current
-        neighbored = compute(x, y)  # Adjust based on grid size
-        for neighbors in neighbored:
-            for neighbor in neighbors:
-                print(neighbor)
-                nx, ny = neighbor
-                if (
-                    0 <= nx < WIN_WIDTH
-                    and 0 <= ny < WIN_HEIGHT
-                    and surface.get_at((nx, ny)) != (255, 255, 255)
-                ):  # Check if the neighbor is within bounds and not a white wall
-                    stack.append(neighbor)
+        motion = vision.main(x, y)  # Adjust based on grid size
+        vehicle.move(5 * motion[0], 5 * motion[1])
     return False
 
 
@@ -117,7 +93,6 @@ def main():
     Main function to run the maze solver
     """
     vehicle = RectObject(0, 109)  # Initialize rectangular object
-    vehicle.rotate(90)
     start_distance = vehicle.get_position()[0]  # Distance from start position
     score = 0
     run = True
@@ -131,7 +106,7 @@ def main():
                 quit()
 
         # Solve maze
-        solved = solve_maze(start, finish, surface)
+        solved = solve_maze(start, finish, vehicle)
         if solved:
             print("Maze solved!")
             break

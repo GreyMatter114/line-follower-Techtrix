@@ -1,5 +1,5 @@
 import requests
-from utility.vision import compute
+from vision import compute
 
 # URL of the ESP32 serving the images
 ESP32_URL = "http://esp32_ip_address/capture"
