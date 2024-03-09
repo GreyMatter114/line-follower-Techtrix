@@ -1,0 +1,37 @@
+if contAvgCentList[0][1] != None:
+	goForward()
+	continue
+
+if contAvgCentList[0][0] != None:
+	turnSlightLeft()
+	continue
+if contAvgCentList[0][2] != None:
+	turnSlightRight()
+	continue
+
+if contAvgCentList[1][0] != None:
+	trunLeft()
+	continue
+if contAvgCentList[1][2] != None:
+	turnLeft()
+	continue
+if contAvgCentList[1][1] != None:
+	if contAvgCentList[2][0] != None:
+		turnSharpLeft()
+		continue
+	elif contAvgCentList[2][2] != None:
+		turnSharpRight()
+		continue
+	else:
+		bitSlow()
+if contAvgCentList[2][2] != None:
+	bitSlow()
+	if contAvgCentList[2][0] != None:
+		turnLeft()
+		continue
+	elif contAvgCentList[2][2] != None:
+		turnRight()
+		continue
+	specalCondition()
+
+stop()

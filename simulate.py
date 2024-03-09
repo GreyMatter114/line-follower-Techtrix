@@ -13,7 +13,7 @@ clock = pygame.time.Clock()
 # Window dimensions
 WIN_WIDTH = 600
 WIN_HEIGHT = 600
-surface = pygame.Surface((WIN_WIDTH, WIN_HEIGHT))
+# surface = pygame.Surface((WIN_WIDTH, WIN_HEIGHT))
 STAT_FONT = pygame.font.SysFont("comicsans", 50)
 
 # Pygame window
@@ -26,7 +26,7 @@ bg_img = pygame.transform.scale(
 )
 
 # Blit the image onto the main surface
-surface.blit(bg_img, (0, 0))
+# surface.blit(bg_img, (0, 0))
 
 
 class RectObject:
@@ -45,11 +45,11 @@ class RectObject:
         self.x += dx
         self.y += dy
 
-    def draw(self, win):
+    def draw(self):
         """
         Draw the rectangular object on the window
         """
-        pygame.draw.rect(surface, (255, 0, 0), (50, 20, 100, 60))
+        pygame.draw.rect(WIN, (0, 0, 255), (self.x, self.y, 10, 10))
 
     def get_position(self):
         """
@@ -58,14 +58,14 @@ class RectObject:
         return self.x, self.y
 
 
-def draw_window(win, vehicle, score):
+def draw_window(vehicle):
     """
     Draw the game window
     """
-    win.blit(bg_img, (0, 0))
-    vehicle.draw(win)
-    score_label = STAT_FONT.render("Score: " + str(int(score)), 1, (0, 255, 0))
-    win.blit(score_label, (WIN_WIDTH - score_label.get_width() - 15, 10))
+    WIN.blit(bg_img, (0, 0))
+    vehicle.draw()
+    # score_label = STAT_FONT.render("Score: " + str(int(score)), 1, (0, 255, 0))
+    # surface.blit(score_label, (WIN_WIDTH - score_label.get_width() - 15, 10))
     pygame.display.update()
 
 
@@ -83,8 +83,12 @@ def solve_maze(start, finish, vehicle):
             continue
         visited.add(current)
         x, y = current
-        motion = vision.main(x, y)  # Adjust based on grid size
+        motion = vision.main(x, y, maze_path)  # Adjust based on grid size
         vehicle.move(5 * motion[0], 5 * motion[1])
+        # Update window to reflect movement
+        # Update score parameter if needed
+        draw_window(vehicle)
+        pygame.time.delay(100)  # Add a small delay for visibility
     return False
 
 
@@ -92,9 +96,10 @@ def main():
     """
     Main function to run the maze solver
     """
-    vehicle = RectObject(0, 109)  # Initialize rectangular object
+    vehicle = RectObject(
+        WIN_WIDTH // 2, WIN_HEIGHT // 2
+    )  # Initialize rectangular object
     start_distance = vehicle.get_position()[0]  # Distance from start position
-    score = 0
     run = True
     while run:
         clock.tick(30)
@@ -112,13 +117,11 @@ def main():
             break
 
         # Move the rectangular object
-        vehicle.move(10)
 
         # Update score based on distance traveled
         score = vehicle.get_position()[0] - start_distance
-
+        draw_window(vehicle)
         # Draw window
-        draw_window(WIN, vehicle, score)
 
 
 if __name__ == "__main__":
